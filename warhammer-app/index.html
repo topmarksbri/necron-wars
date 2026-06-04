@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#050a06">
+  <title>Necron Wars — 40K Learning App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     HOME SCREEN
+     ============================================================ -->
+<div class="screen active" id="screen-home">
+  <div class="home-hero">
+    <div class="home-logo">☠️</div>
+    <div class="home-title">NECRON WARS</div>
+    <div class="home-subtitle">WARHAMMER 40,000 · 11TH EDITION</div>
+  </div>
+
+  <div class="player-card">
+    <div class="player-level-row">
+      <div class="level-badge" id="home-level-num">1</div>
+      <div class="player-info">
+        <div class="player-title" id="home-title">Dormant Warrior</div>
+        <div class="player-xp" id="home-xp">0 / 200 XP</div>
+      </div>
+    </div>
+    <div class="xp-bar-container">
+      <div class="xp-bar-track">
+        <div class="xp-bar-fill" id="home-xp-bar" style="width: 0%"></div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-chip">
+        <span class="value" id="home-correct">0</span>
+        <span class="label">Correct</span>
+      </div>
+      <div class="stat-chip">
+        <span class="value" id="home-streak">0</span>
+        <span class="label">Best Streak</span>
+      </div>
+      <div class="stat-chip">
+        <span class="value" id="home-achievements">0</span>
+        <span class="label">Badges</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mode-grid">
+    <div class="mode-card featured" onclick="showScreen('battle')">
+      <div class="mode-badge">NEW</div>
+      <div class="mode-icon">⚔️</div>
+      <div class="mode-name">Battle Simulator</div>
+      <div class="mode-desc">Play full scenarios with real dice rolls — all 5 phases</div>
+    </div>
+    <div class="mode-card" onclick="showScreen('learn')">
+      <div class="mode-icon">📚</div>
+      <div class="mode-name">Learn the Rules</div>
+      <div class="mode-desc">9 guided lessons from first move to victory</div>
+    </div>
+    <div class="mode-card" onclick="showScreen('quiz')">
+      <div class="mode-icon">🧠</div>
+      <div class="mode-name">Quiz</div>
+      <div class="mode-desc">Test your rules knowledge</div>
+    </div>
+    <div class="mode-card" onclick="showScreen('reference')">
+      <div class="mode-icon">📖</div>
+      <div class="mode-name">Reference</div>
+      <div class="mode-desc">Quick rules lookup</div>
+    </div>
+  </div>
+
+  <div style="padding: 0 16px 8px; font-size: 12px; color: var(--text-muted); text-align: center; letter-spacing: 1px;">
+    BASED ON WARHAMMER 40,000 11TH EDITION CORE RULES
+  </div>
+</div>
+
+<!-- ============================================================
+     LEARN SCREEN
+     ============================================================ -->
+<div class="screen" id="screen-learn">
+  <div class="app-header">
+    <button class="header-back" onclick="showScreen('home')">← Home</button>
+    <div class="header-title">Learn the Rules</div>
+  </div>
+
+  <!-- Lesson list -->
+  <div id="learn-list">
+    <div class="learn-progress">
+      <div class="learn-progress-text" id="learn-progress-text">0 / 9 lessons complete</div>
+      <div class="learn-progress-track">
+        <div class="learn-progress-fill" id="learn-progress-bar" style="width: 0%"></div>
+      </div>
+    </div>
+    <div class="lesson-cards" id="lesson-cards">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+
+  <!-- Active lesson -->
+  <div id="learn-lesson" style="display:none">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- ============================================================
+     QUIZ SCREEN
+     ============================================================ -->
+<div class="screen" id="screen-quiz">
+  <div class="app-header">
+    <button class="header-back" onclick="showScreen('home')">← Home</button>
+    <div class="header-title">Quiz Mode</div>
+    <div class="header-xp" id="header-xp">0 XP</div>
+  </div>
+
+  <!-- Setup -->
+  <div class="quiz-setup" id="quiz-setup">
+    <div class="section-title">Choose Category</div>
+    <div class="category-grid" id="category-grid">
+      <!-- rendered by JS -->
+    </div>
+    <button class="btn-primary" onclick="startQuiz()">⚡ Begin Quiz</button>
+    <button class="btn-secondary" onclick="QUIZ.selectedCategory = 'necrons'; renderCategoryGrid(); startQuiz()">💚 Necron Focus Quiz</button>
+  </div>
+
+  <!-- Active Quiz -->
+  <div class="quiz-active" id="quiz-active" style="display:none">
+    <div class="quiz-progress-bar">
+      <div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div>
+    </div>
+    <div class="quiz-meta">
+      <span id="quiz-current">1 / 10</span>
+      <span class="quiz-streak" id="quiz-streak-display"></span>
+      <span id="quiz-difficulty" class="difficulty-badge easy">easy</span>
+    </div>
+    <div class="question-card">
+      <div class="question-category" id="quiz-category"></div>
+      <div class="question-text" id="quiz-question"></div>
+    </div>
+    <div class="answers-list" id="answers-list"></div>
+    <div class="explanation-card" id="explanation-card"></div>
+    <button class="btn-primary" id="btn-next" onclick="nextQuestion()" style="display:none">Next →</button>
+  </div>
+
+  <!-- Results -->
+  <div class="quiz-results" id="quiz-results" style="display:none">
+    <div class="results-circle">
+      <div class="results-score" id="results-score">0/10</div>
+      <div class="results-label">SCORE</div>
+    </div>
+    <div class="results-title" id="results-title">Quiz Complete</div>
+    <div class="results-subtitle" id="results-subtitle"></div>
+    <div class="results-xp" id="results-xp">+0 XP</div>
+    <button class="btn-primary" onclick="showQuizSetup()">🔄 Play Again</button>
+    <button class="btn-secondary" onclick="showScreen('home')">Return to Sanctum</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     REFERENCE SCREEN
+     ============================================================ -->
+<div class="screen" id="screen-reference">
+  <div class="app-header">
+    <button class="header-back" onclick="showScreen('home')">← Home</button>
+    <div class="header-title">Rules Reference</div>
+    <div class="header-xp" id="header-xp-ref"></div>
+  </div>
+
+  <div id="reference-list-container">
+    <div class="reference-search">
+      <input type="search" class="search-input" id="search-input" placeholder="🔍  Search rules..." autocomplete="off">
+    </div>
+    <div class="reference-list" id="reference-list">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+
+  <div id="ref-detail" class="ref-detail">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- ============================================================
+     BATTLE SCREEN
+     ============================================================ -->
+<div class="screen" id="screen-battle">
+  <div class="app-header">
+    <button class="header-back" onclick="showScreen('home')">← Home</button>
+    <div class="header-title">Battle Simulator</div>
+  </div>
+
+  <!-- Setup -->
+  <div id="battle-setup">
+    <div class="battle-setup">
+      <div class="section-title">Choose Scenario</div>
+      <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5;">
+        You command the Necrons. Use real or virtual dice. The app guides you through every phase and explains each rule as you play.
+      </div>
+      <div id="scenario-cards"></div>
+    </div>
+  </div>
+
+  <!-- Active Battle -->
+  <div id="battle-active" style="display:none">
+    <div class="battle-header">
+      <div class="battle-round-badge" id="battle-round">ROUND 1</div>
+      <div class="battle-phase-badge" id="battle-phase"></div>
+    </div>
+
+    <div class="army-panels">
+      <div class="army-panel necrons" id="necron-panel">
+        <div class="army-panel-title">⚡ YOUR FORCES</div>
+        <div class="unit-rows-container"></div>
+      </div>
+      <div class="army-panel marines" id="marine-panel">
+        <div class="army-panel-title">🔵 ENEMY</div>
+        <div class="unit-rows-container"></div>
+      </div>
+    </div>
+
+    <div class="battle-log" id="battle-log"></div>
+
+    <div class="battle-action-panel" id="battle-action-panel">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+
+  <!-- Victory -->
+  <div id="battle-victory" style="display:none">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- ============================================================
+     ACHIEVEMENTS SCREEN
+     ============================================================ -->
+<div class="screen" id="screen-achievements">
+  <div class="app-header">
+    <button class="header-back" onclick="showScreen('home')">← Home</button>
+    <div class="header-title">Dynasty Honours</div>
+  </div>
+  <div style="padding: 16px 16px 8px; font-size: 13px; color: var(--text-secondary); text-align: center;">
+    Unlock achievements to earn bonus XP and prove your mastery of the ancient laws of war.
+  </div>
+  <div class="achievements-list" id="achievements-list">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- ============================================================
+     BOTTOM NAVIGATION
+     ============================================================ -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-screen="home">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Home</span>
+  </button>
+  <button class="nav-btn" data-screen="learn">
+    <span class="nav-icon">📚</span>
+    <span class="nav-label">Learn</span>
+  </button>
+  <button class="nav-btn" data-screen="quiz">
+    <span class="nav-icon">🧠</span>
+    <span class="nav-label">Quiz</span>
+  </button>
+  <button class="nav-btn" data-screen="battle">
+    <span class="nav-icon">⚔️</span>
+    <span class="nav-label">Battle</span>
+  </button>
+  <button class="nav-btn" data-screen="reference">
+    <span class="nav-icon">📖</span>
+    <span class="nav-label">Rules</span>
+  </button>
+  <button class="nav-btn" data-screen="achievements">
+    <span class="nav-icon">🏆</span>
+    <span class="nav-label">Honours</span>
+  </button>
+</nav>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="quiz.js"></script>
+<script src="battle.js"></script>
+<script src="learn.js"></script>
+
+<script>
+// Patch army panel rendering to use the container correctly
+const _origUpdateArmyPanel = updateArmyPanel;
+function updateArmyPanel(panelId, units) {
+  const panel = document.getElementById(panelId);
+  if (!panel) return;
+  const container = panel.querySelector('.unit-rows-container');
+  if (!container) return;
+  container.innerHTML = units.map(u => {
+    const pct = u.maxWounds > 0 ? (u.currentWounds / u.maxWounds) : 0;
+    const depleted = u.count === 0;
+    return `
+      <div class="unit-row">
+        <div class="unit-name-row">
+          <span class="unit-name">${u.name.split(' ').slice(-1)[0]}</span>
+          <span class="unit-count ${depleted ? 'depleted' : ''}">${depleted ? '✕' : u.count + '/' + u.maxCount}</span>
+        </div>
+        <div class="unit-health-bar">
+          <div class="unit-health-fill" style="width:${Math.max(0, pct * 100)}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+</script>
+</body>
+</html>

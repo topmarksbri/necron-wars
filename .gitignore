@@ -1,0 +1,9 @@
+# Games Workshop copyrighted rulebook — do not publish
+*.pdf
+
+# macOS
+.DS_Store
+
+# Local tooling / machine-specific config
+.claude/
+warhammer-app/.claude/
